@@ -1,0 +1,1 @@
+﻿select * from Northwind.dbo.Customers;

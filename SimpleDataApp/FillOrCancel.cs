@@ -107,9 +107,9 @@ namespace SimpleDataApp
                     cmdCancelOrder.ExecuteNonQuery();
                 }
                 // A simple catch.  
-                catch
+                catch (Exception ex)
                 {
-                    MessageBox.Show("The cancel operation was not completed.");
+                    MessageBox.Show("The cancel operation was not completed." +  ex.Message);
                 }
                 finally
                 {
@@ -122,6 +122,51 @@ namespace SimpleDataApp
         //FC-8 Fill an order.  
         private void btnFillOrder_Click(object sender, EventArgs e)
         {
+            if( isOrderID() )
+            {
+                SqlConnection conn = new SqlConnection(connstr);
+
+                //create sql command and identify it as stored procedure
+                SqlCommand cmdFillOrder = new SqlCommand("Sales.uspFillOrder", conn  );
+                cmdFillOrder.CommandType = CommandType.StoredProcedure;
+
+                //add input parameter for sql command
+                cmdFillOrder.Parameters.Add(new SqlParameter("@OrderID", SqlDbType.Int));
+                cmdFillOrder.Parameters["@OrderID"].Value = parsedOrderID;
+
+                //add second parameter id
+                //cmdFillOrder.Parameters.Add(new SqlParameter("@FillDate", SqlDbType.DateTime, 8));
+                //cmdFillOrder.Parameters["@FillDate"].Value = dtpFillDate.Value;
+
+                //Add the second input parameter.  
+                cmdFillOrder.Parameters.Add(new SqlParameter("@FilledDate", SqlDbType.DateTime, 8));
+                cmdFillOrder.Parameters["@FilledDate"].Value = dtpFillDate.Value;
+
+                MessageBox.Show("filldate: " + dtpFillDate.Value);
+
+                //try catch finally
+                try
+                {
+                    conn.Open();
+
+                    //run the cmd fill order sp
+                    cmdFillOrder.ExecuteNonQuery();
+
+                    MessageBox.Show("fill order !");
+                }
+                catch (Exception ex)
+                {
+                    
+                    MessageBox.Show("Something wrong in fill order ! " + ex.Message );
+
+                    System.Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+
+            }
 
         }
 
